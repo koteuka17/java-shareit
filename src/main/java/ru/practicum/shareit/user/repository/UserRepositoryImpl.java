@@ -18,7 +18,6 @@ public class UserRepositoryImpl implements UserRepository {
     private final HashMap<Long, UserDto> storageDto = new HashMap<>();
     private final ArrayList<String> emails = new ArrayList<>();
     private long count = 1;
-    public static ArrayList<Long> existingIds = new ArrayList<>();
 
     @Override
     public User addUser(User user) {
@@ -29,8 +28,7 @@ public class UserRepositoryImpl implements UserRepository {
         emails.add(email);
         user.setId(count);
         storage.put(count, user);
-        storageDto.put(count, UserMapper.toUserDto(user));
-        existingIds.add(count++);
+        storageDto.put(count++, UserMapper.toUserDto(user));
         return user;
     }
 

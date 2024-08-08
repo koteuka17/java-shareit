@@ -8,8 +8,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
-@RestController
-@RequestMapping(path = "/users")
 @AllArgsConstructor
 public class UserController {
     private final UserService userService;

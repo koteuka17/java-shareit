@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.service;
+package ru.practicum.shareit.repo;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,17 +7,41 @@ import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
 @Slf4j
 @Service
 @AllArgsConstructor
-public class ItemServiceImpl implements ItemService {
-    private ItemRepository repository;
+public class RepoService {
+    private Repo repository;
 
-    @Override
+    public User addUser(User user) {
+        log.info("Создание пользователя {}", user);
+        if (repository.getAllUsers().contains(user)) {
+            log.warn("Такой пользователь уже существует");
+            throw new ValidationException("Такой пользователь уже существует");
+        }
+        return repository.addUser(user);
+    }
+
+    public UserDto getUser(Long id) {
+        log.info("Получение пользователя с id: {}", id);
+        return repository.getUser(id);
+    }
+
+    public User updUser(Long id, User user) {
+        log.info("Обновление пользователя c id: {} - {}", id, user);
+        return repository.updUser(id, user);
+    }
+
+    public void delUser(Long id) {
+        log.info("Удаление пользователя с id: {}", id);
+        repository.delUser(id);
+    }
+
     public ItemDto createItem(Long userId, ItemDto itemDto) {
         log.info("Создание вещи {}", itemDto);
         if (repository.getAllItemsDto().contains(itemDto)) {
@@ -27,7 +51,6 @@ public class ItemServiceImpl implements ItemService {
         return repository.createItem(userId, itemDto);
     }
 
-    @Override
     public Item updateItem(Long userId, Item item, Long id) {
         log.info("Обновление вещи с id: {} - {}", id, item);
         if (!repository.getItem(id).getOwner().equals(userId)) {
@@ -36,25 +59,21 @@ public class ItemServiceImpl implements ItemService {
         return repository.updateItem(userId, item, id);
     }
 
-    @Override
     public List<Item> getItems(Long userId) {
         log.info("Просмотр владельцем с id: {} списка всех его вещей", userId);
         return repository.getItems(userId);
     }
 
-    @Override
     public ItemDto getItemDto(Long id) {
         log.info("Получение вещи с id: {}", id);
         return repository.getItemDto(id);
     }
 
-    @Override
     public Item getItem(Long id) {
         log.info("Получение вещи с id: {}", id);
         return repository.getItem(id);
     }
 
-    @Override
     public List<ItemDto> searchItem(Long userId, String text) {
         log.info("Поиск вещи пользователя с id: {} - по тексту: {}", userId, text);
         return repository.searchItem(userId, text);

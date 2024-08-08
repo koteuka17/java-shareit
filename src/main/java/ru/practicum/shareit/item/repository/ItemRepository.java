@@ -10,9 +10,9 @@ public interface ItemRepository {
 
     Item updateItem(Long userId, Item item, Long id);
 
-    List<Item> getAll();
+    List<Item> getAllItems();
 
-    List<ItemDto> getAllDto();
+    List<ItemDto> getAllItemsDto();
 
     List<Item> getItems(Long userId);
 

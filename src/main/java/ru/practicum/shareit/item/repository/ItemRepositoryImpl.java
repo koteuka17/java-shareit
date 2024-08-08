@@ -41,12 +41,12 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public List<Item> getAll() {
+    public List<Item> getAllItems() {
         return List.copyOf(storage.values());
     }
 
     @Override
-    public List<ItemDto> getAllDto() {
+    public List<ItemDto> getAllItemsDto() {
         return List.copyOf(storageDto.values());
     }
 
