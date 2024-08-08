@@ -27,7 +27,7 @@ public class ItemServiceImpl implements ItemService {
         }
         if (!UserRepositoryImpl.existingIds.contains(userId)) {
             log.warn("Пользователь не существует");
-            throw new NotFoundException("Пользователь уже существует");
+            throw new NotFoundException("Пользователь не существует");
         }
         return repository.createItem(userId, itemDto);
     }
