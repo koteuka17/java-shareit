@@ -18,7 +18,7 @@ public class UserRepositoryImpl implements UserRepository {
     private final HashMap<Long, UserDto> storageDto = new HashMap<>();
     private final ArrayList<String> emails = new ArrayList<>();
     private long count = 1;
-    public static ArrayList<Long> existingIds = new ArrayList<>();
+    public static final ArrayList<Long> existingIds = new ArrayList<>();
 
     @Override
     public User addUser(User user) {
