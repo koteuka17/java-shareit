@@ -1,12 +1,14 @@
 package ru.practicum.shareit.booking;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 public class Booking {
     long id;                //— уникальный идентификатор бронирования
     LocalDateTime start;    //— дата и время начала бронирования

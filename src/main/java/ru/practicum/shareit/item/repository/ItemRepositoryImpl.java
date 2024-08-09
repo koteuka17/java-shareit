@@ -2,41 +2,39 @@ package ru.practicum.shareit.item.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.item.ItemMapper;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class ItemRepositoryImpl implements ItemRepository {
     private final HashMap<Long, Item> storage = new HashMap<>();
-    private final HashMap<Long, ItemDto> storageDto = new HashMap<>();
     private long count = 1;
 
     @Override
-    public ItemDto createItem(Long userId, ItemDto itemDto) {
-        itemDto.setId(count);
-        Item item = ItemMapper.fromItemDto(itemDto, userId);
-        storage.put(count, item);
-        storageDto.put(count++, itemDto);
-        return itemDto;
+    public Item createItem(Item item) {
+        item.setId(count);
+        storage.put(count++, item);
+        return item;
     }
 
     @Override
     public Item updateItem(Long userId, Item item, Long id) {
         Item savedItem = storage.get(id);
-        savedItem.setName(item.getName());
-        savedItem.setDescription(item.getDescription());
-        savedItem.setAvailable(item.getAvailable());
+        if (item.getName() != null)
+            savedItem.setName(item.getName());
+        if (item.getDescription() != null)
+            savedItem.setDescription(item.getDescription());
+        if (item.getAvailable() != null)
+            savedItem.setAvailable(item.getAvailable());
+        if (item.getOwner() != null)
+            savedItem.setOwner(item.getOwner());
         savedItem.setRequest(item.getRequest());
         storage.put(id, savedItem);
-        storageDto.put(id, ItemMapper.toItemDto(savedItem));
         return savedItem;
     }
 
@@ -46,20 +44,10 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public List<ItemDto> getAllItemsDto() {
-        return List.copyOf(storageDto.values());
-    }
-
-    @Override
-    public List<Item> getItems(Long userId) {
+    public List<Item> getItems(User user) {
         return storage.values().stream()
-                .filter(item -> item.getOwner().equals(userId))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public ItemDto getItemDto(Long id) {
-        return storageDto.get(id);
+                .filter(item -> item.getOwner().equals(user))
+                .toList();
     }
 
     @Override
@@ -68,22 +56,19 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public List<ItemDto> searchItem(Long userId, String text) {
+    public List<Item> searchItem(Long userId, String text) {
         if (text.isEmpty()) {
             return new ArrayList<>();
         }
-        List<ItemDto> result = new ArrayList<>();
-        Collection<ItemDto> list = storageDto.values();
-        for (ItemDto item : list) {
-            if (item.getName() != null) {
-                if (item.getDescription() != null) {
-                    if (item.getAvailable()) {
-                        if (item.getName().toLowerCase().contains(text.toLowerCase())
-                                || item.getDescription().toLowerCase().contains(text.toLowerCase()))
-                            result.add(item);
-                    }
-                }
-            }
+        List<Item> result = storage.values().stream()
+                .filter(Item::getAvailable)
+                .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase()))
+                .toList();
+        if (result.isEmpty()) {
+            result = storage.values().stream()
+                    .filter(Item::getAvailable)
+                    .filter(item -> item.getDescription().toLowerCase().contains(text.toLowerCase()))
+                    .toList();
         }
         return result;
     }

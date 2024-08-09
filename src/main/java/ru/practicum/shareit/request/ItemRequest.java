@@ -1,12 +1,14 @@
 package ru.practicum.shareit.request;
 
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 public class ItemRequest {
     Long id;                // — уникальный идентификатор запроса
     String description;     // — текст запроса, содержащий описание требуемой вещи

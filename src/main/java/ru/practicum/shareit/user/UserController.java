@@ -2,38 +2,39 @@ package ru.practicum.shareit.user;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
-@AllArgsConstructor
+@RestController
+@RequestMapping(path = "/users")
+@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
     //создание пользователя
     @PostMapping
-    public User createUser(@Valid @RequestBody User user) {
-        return userService.addUser(user);
+    public UserDto createUserDto(@Valid @RequestBody UserDto userDto) {
+        return userService.addUserDto(userDto);
     }
 
     //получение пользователя
     @GetMapping("/{id}")
-    public UserDto findUser(@PathVariable long id) {
-        return userService.getUser(id);
+    public UserDto findUserDto(@PathVariable long id) {
+        return userService.getUserDto(id);
     }
 
     //обновление пользователя
     @PatchMapping("/{id}")
-    public User updateUser(@RequestBody User user,
+    public UserDto updateUserDto(@RequestBody UserDto userDto,
                            @PathVariable("id") @Min(1) Long id) {
-        return userService.updUser(id, user);
+        return userService.updUserDto(id, userDto);
     }
 
     //удаление пользователя по id
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable long id) {
-        userService.delUser(id);
+    public void deleteUserDto(@PathVariable long id) {
+        userService.delUserDto(id);
     }
 }
