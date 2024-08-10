@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.user.service.UserServiceImpl;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 
@@ -18,27 +18,30 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository repository;
+    private final UserRepository userRepository;
 
     @Override
     public ItemDto createItemDto(Long userId, ItemDto itemDto) {
         log.info("Создание вещи {}", itemDto);
-        if (UserServiceImpl.getStaticUser(userId) == null) {
+        User user = userRepository.getUser(userId);
+        if (user == null) {
             log.warn("Пользователь не существует");
             throw new NotFoundException("Пользователь не существует");
         }
-        Item item = ItemMapper.toItem(itemDto, userId);
-        if (repository.getAllItems().contains(item)) {
-            log.warn("Такая вещь уже существует");
-            throw new ValidationException("Такая вещь уже существует");
-        }
+        Item item = ItemMapper.toItem(itemDto, user);
         return ItemMapper.toItemDto(repository.createItem(item));
     }
 
     @Override
     public ItemDto updateItemDto(Long userId, ItemDto itemDto, Long id) {
         log.info("Обновление вещи с id: {} - {}", id, itemDto);
-        Item item = ItemMapper.toItem(itemDto, userId);
-        if (!repository.getItem(id).getOwner().equals(UserServiceImpl.getStaticUser(userId))) {
+        User user = userRepository.getUser(userId);
+        if (user == null) {
+            log.warn("Пользователь не существует");
+            throw new NotFoundException("Пользователь не существует");
+        }
+        Item item = ItemMapper.toItem(itemDto, user);
+        if (!repository.getItem(id).getOwner().equals(user)) {
             throw new NotFoundException("Изменять данные о вещи может только ее владелец");
         }
         return ItemMapper.toItemDto(repository.updateItem(userId, item, id));
@@ -47,7 +50,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> getItemsDto(Long userId) {
         log.info("Просмотр владельцем с id: {} списка всех его вещей", userId);
-        return repository.getItems(UserServiceImpl.getStaticUser(userId)).stream()
+        return repository.getItems(userRepository.getUser(userId)).stream()
                 .map(ItemMapper::toItemDto)
                 .toList();
     }

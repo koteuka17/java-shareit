@@ -60,16 +60,10 @@ public class ItemRepositoryImpl implements ItemRepository {
         if (text.isEmpty()) {
             return new ArrayList<>();
         }
-        List<Item> result = storage.values().stream()
+        return storage.values().stream()
                 .filter(Item::getAvailable)
-                .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase()))
+                .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase()) ||
+                    item.getDescription().toLowerCase().contains(text.toLowerCase()))
                 .toList();
-        if (result.isEmpty()) {
-            result = storage.values().stream()
-                    .filter(Item::getAvailable)
-                    .filter(item -> item.getDescription().toLowerCase().contains(text.toLowerCase()))
-                    .toList();
-        }
-        return result;
     }
 }

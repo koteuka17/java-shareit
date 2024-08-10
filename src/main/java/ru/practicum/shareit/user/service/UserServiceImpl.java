@@ -8,13 +8,12 @@ import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
-import ru.practicum.shareit.user.repository.UserRepositoryImpl;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private static final UserRepository repository = new UserRepositoryImpl();
+    private final UserRepository repository;
 
     @Override
     public UserDto addUserDto(UserDto userDto) {
@@ -31,11 +30,6 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserDto(Long id) {
         log.info("Получение пользователя с id: {}", id);
         return UserMapper.toUserDto(repository.getUser(id));
-    }
-
-    public static User getStaticUser(Long id) {
-        log.info("Получение пользователя с id: {}", id);
-        return repository.getUser(id);
     }
 
     @Override
