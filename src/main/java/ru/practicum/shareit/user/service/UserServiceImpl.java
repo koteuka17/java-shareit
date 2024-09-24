@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,28 +20,39 @@ public class UserServiceImpl implements UserService {
     public UserDto addUserDto(UserDto userDto) {
         log.info("Создание пользователя {}", userDto);
         User user = UserMapper.toUser(userDto);
-        if (repository.getAll().contains(user)) {
+        if (repository.findAll().contains(user)) {
             log.warn("Такой пользователь уже существует");
             throw new ValidationException("Такой пользователь уже существует");
         }
-        return UserMapper.toUserDto(repository.addUser(user));
+        return UserMapper.toUserDto(repository.save(user));
     }
 
     @Override
     public UserDto getUserDto(Long id) {
         log.info("Получение пользователя с id: {}", id);
-        return UserMapper.toUserDto(repository.getUser(id));
+        return UserMapper.toUserDto(repository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Пользователь не найден")));
     }
 
     @Override
     public UserDto updUserDto(Long id, UserDto userDto) {
         log.info("Обновление пользователя c id: {} - {}", id, userDto);
-        return UserMapper.toUserDto(repository.updUser(id, UserMapper.toUser(userDto)));
+        User savedUser = repository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Пользователь не найден"));
+        String name = userDto.getName();
+        String email = userDto.getEmail();
+        if (name != null && !name.isBlank()) {
+            savedUser.setName(name);
+        }
+        if (email != null && !email.isBlank()) {
+            savedUser.setEmail(email);
+        }
+        return UserMapper.toUserDto(repository.save(savedUser));
     }
 
     @Override
     public void delUserDto(Long id) {
         log.info("Удаление пользователя с id: {}", id);
-        repository.delUser(id);
+        repository.deleteById(id);
     }
 }

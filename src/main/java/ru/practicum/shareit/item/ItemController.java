@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.comment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoOut;
 import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.List;
@@ -17,14 +19,14 @@ public class ItemController {
 
     //создание вещи
     @PostMapping
-    public ItemDto createItemDto(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
-                              @RequestBody @Valid ItemDto itemDto) {
+    public ItemDtoOut createItemDto(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
+                                    @RequestBody @Valid ItemDto itemDto) {
         return itemService.createItemDto(userId, itemDto);
     }
 
     //изменение вещи
     @PatchMapping("/{id}")
-    public ItemDto updateItemDto(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
+    public ItemDtoOut updateItemDto(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
                            @RequestBody ItemDto itemDto,
                            @PathVariable("id") @Min(1) Long id) {
         return itemService.updateItemDto(userId, itemDto, id);
@@ -32,21 +34,29 @@ public class ItemController {
 
     //получение всех вещей пользователя
     @GetMapping
-    public List<ItemDto> getAllItemsDto(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId) {
+    public List<ItemDtoOut> getAllItemsDto(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId) {
         return itemService.getItemsDto(userId);
     }
 
     //получение вещи по id
     @GetMapping("/{id}")
-    public ItemDto findItemDto(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
+    public ItemDtoOut findItemDto(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
                             @PathVariable Long id) {
-        return itemService.getItemDto(id);
+        return itemService.getItemDto(id, userId);
     }
 
     //поиск вещи по тексту
     @GetMapping("/search")
-    public List<ItemDto> searchItemDto(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<ItemDtoOut> searchItemDto(@RequestHeader("X-Sharer-User-Id") Long userId,
                                     @RequestParam(required = false) String text) {
         return itemService.searchItem(userId, text);
+    }
+
+    //добавление отзыва
+    @PostMapping("/{itemId}/comment")
+    public CommentDto createCommentDto(@RequestBody @Valid CommentDto commentDto,
+                                       @PathVariable Long itemId,
+                                       @RequestHeader("X-Sharer-User-Id") @Min(1) Long userId) {
+        return itemService.createCommentDto(userId, itemId, commentDto);
     }
 }
