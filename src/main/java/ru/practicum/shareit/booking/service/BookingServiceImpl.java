@@ -120,7 +120,7 @@ public class BookingServiceImpl implements BookingService {
         return bookings.stream().map(BookingMapper::toBookingDtoOut).collect(toList());
     }
 
-    public Booking getById(long id) {
+    private Booking getById(long id) {
         log.info("Получение бронирования с id {}", id);
         return bookingRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Бронирование не найдено"));

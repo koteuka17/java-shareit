@@ -19,7 +19,7 @@ public class Comment {
     @Column(name = "id", nullable = false)
     private Long id;                        // — уникальный идентификатор комментария
 
-    @Column(name = "text")
+    @Column(name = "feedback")
     private String text;                    // — вещь, к которой относится комментарий
 
     @ManyToOne

@@ -23,20 +23,16 @@ public class Item {
     private long id;              //— уникальный идентификатор вещи
 
     @Column(name = "name")
-    @NotBlank(message = "Название не может быть пустым")
     private String name;          //— краткое название
 
     @Column(name = "description")
-    @NotBlank(message = "Описание не может быть пустым")
     private String description;   //— развёрнутое описание
 
     @Column(name = "is_available")
-    @NotNull(message = "У вещи должен быть статус")
     private Boolean available;    //— статус о том, доступна или нет вещь для аренды
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
-    @NotNull(message = "У вещи должен быть владелец")
     private User owner;           //— владелец вещи
 
     @ManyToOne
