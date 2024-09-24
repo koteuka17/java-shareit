@@ -19,6 +19,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 
@@ -55,7 +56,7 @@ public class BookingServiceImpl implements BookingService {
         }
         Item item = itemRepository.findById(booking.getItem().getId()).orElseThrow(() ->
                 new EntityNotFoundException("Вещь не найдена"));
-        if (userId != item.getOwner().getId()) {
+        if (!Objects.equals(userId, item.getOwner().getId())) {
             throw new IllegalArgumentException("Подтвердить бронирование может только собственник вещи");
         }
         Status newBookingStatus = isApproved ? Status.APPROVED : Status.REJECTED;
@@ -71,7 +72,7 @@ public class BookingServiceImpl implements BookingService {
         User booker = booking.getBooker();
         User owner = userRepository.findById(booking.getItem().getOwner().getId()).orElseThrow(() ->
                 new EntityNotFoundException("Пользователь не найден"));
-        if (booker.getId() != userId && owner.getId() != userId) {
+        if (!Objects.equals(booker.getId(), userId) && !Objects.equals(owner.getId(), userId)) {
             throw new ValidationException("Только автор или владелец может просматривать данное бронирование");
         }
         return BookingMapper.toBookingDtoOut(booking);
