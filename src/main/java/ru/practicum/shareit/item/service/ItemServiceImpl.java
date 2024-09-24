@@ -24,6 +24,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.data.domain.Sort.Direction.ASC;
@@ -88,7 +89,7 @@ public class ItemServiceImpl implements ItemService {
         ItemDtoOut itemDtoOut = ItemMapper.toItemDtoOut(item);
 
         LocalDateTime thisMoment = LocalDateTime.now();
-        if (itemDtoOut.getOwner().getId() == userId) {
+        if (Objects.equals(itemDtoOut.getOwner().getId(), userId)) {
             itemDtoOut.setLastBooking(bookingRepository
                     .findFirstByItemIdAndStartLessThanEqualAndStatus(itemDtoOut.getId(), thisMoment,
                             Status.APPROVED, Sort.by(DESC, "end"))
