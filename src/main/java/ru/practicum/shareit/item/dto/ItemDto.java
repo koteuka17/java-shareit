@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -15,8 +14,6 @@ public class ItemDto {
 
     @NotBlank(message = "Описание не может быть пустым")
     private String description;   //— развёрнутое описание
-
-    @NotNull(message = "У вещи должен быть статус")
     private Boolean available;    //— статус о том, доступна или нет вещь для аренды
-    private Long request;         //— id запроса другого пользователя
+    private Long requestId;       //— id запроса другого пользователя
 }
