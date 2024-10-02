@@ -26,8 +26,8 @@ public class ItemController {
     //изменение вещи
     @PatchMapping("/{id}")
     public ItemDtoOut updateItemDto(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
-                           @RequestBody ItemDto itemDto,
-                           @PathVariable("id") @Min(1) Long id) {
+                                    @RequestBody ItemDto itemDto,
+                                    @PathVariable("id") @Min(1) Long id) {
         return itemService.updateItemDto(userId, itemDto, id);
     }
 
@@ -40,14 +40,14 @@ public class ItemController {
     //получение вещи по id
     @GetMapping("/{id}")
     public ItemDtoOut findItemDto(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
-                            @PathVariable Long id) {
+                                  @PathVariable Long id) {
         return itemService.getItemDto(id, userId);
     }
 
     //поиск вещи по тексту
     @GetMapping("/search")
     public List<ItemDtoOut> searchItemDto(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                    @RequestParam(required = false) String text) {
+                                          @RequestParam(required = false) String text) {
         return itemService.searchItem(userId, text);
     }
 

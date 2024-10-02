@@ -49,7 +49,7 @@ class BookingServiceTest {
             LocalDateTime.of(2023, 7, 1, 12, 12, 12),
             LocalDateTime.of(2023, 7, 30, 12, 12, 12),
             item, booker, Status.WAITING);
-    private final BookingDto BookingDto = new BookingDto(
+    private final BookingDto bookingDto = new BookingDto(
             LocalDateTime.of(2023, 7, 1, 12, 12, 12),
             LocalDateTime.of(2023, 7, 30, 12, 12, 12), 1L);
     private final BookingDto bookingDtoWrongItem = new BookingDto(
@@ -62,7 +62,7 @@ class BookingServiceTest {
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
         when(bookingRepository.save(any())).thenReturn(booking);
 
-        BookingDtoOut actualBooking = bookingService.saveNewBooking(BookingDto, 2L);
+        BookingDtoOut actualBooking = bookingService.saveNewBooking(bookingDto, 2L);
 
         Assertions.assertEquals(booking.getStart(), actualBooking.getStart());
         Assertions.assertEquals(booking.getEnd(), actualBooking.getEnd());
@@ -75,7 +75,7 @@ class BookingServiceTest {
         when((userRepository).findById(3L)).thenReturn(Optional.empty());
 
         Assertions.assertThrows(EntityNotFoundException.class, () ->
-                bookingService.saveNewBooking(BookingDto, 3L));
+                bookingService.saveNewBooking(bookingDto, 3L));
     }
 
     @Test
@@ -94,7 +94,7 @@ class BookingServiceTest {
         item.setAvailable(false);
 
         Assertions.assertThrows(IllegalArgumentException.class, () ->
-                bookingService.saveNewBooking(BookingDto, 2L));
+                bookingService.saveNewBooking(bookingDto, 2L));
     }
 
     @Test
@@ -172,7 +172,7 @@ class BookingServiceTest {
 
     @Test
     void getAllByBooker_whenStateFuture_thenReturnListOfBookings() {
-    //    when(userRepository.findById(2L)).thenReturn(Optional.of(booker));
+        //    when(userRepository.findById(2L)).thenReturn(Optional.of(booker));
         when(bookingRepository.findAllByBookerIdAndStateFuture(anyLong())).thenReturn(List.of(booking));
 
         List<BookingDtoOut> actualBookings = bookingService.getAllByBooker("FUTURE", 2L);
@@ -182,7 +182,7 @@ class BookingServiceTest {
 
     @Test
     void getAllByBooker_whenStateWaiting_thenReturnListOfBookings() {
-       // when(userRepository.findById(2L)).thenReturn(Optional.of(booker));
+        // when(userRepository.findById(2L)).thenReturn(Optional.of(booker));
         when(bookingRepository.findAllByBookerIdAndStatus(anyLong(), any())).thenReturn(List.of(booking));
 
         List<BookingDtoOut> actualBookings = bookingService.getAllByBooker("WAITING", 2L);
@@ -242,7 +242,7 @@ class BookingServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookingRepository.findAllByOwnerIdAndStatus(anyLong(), any())).thenReturn(List.of(booking));
 
-        List<BookingDtoOut> actualBookings = bookingService.getAllByOwner( "WAITING", 1L);
+        List<BookingDtoOut> actualBookings = bookingService.getAllByOwner("WAITING", 1L);
 
         Assertions.assertEquals(List.of(BookingMapper.toBookingDtoOut(booking)), actualBookings);
     }
