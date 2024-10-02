@@ -12,7 +12,7 @@ import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.ValidationException;
+import ru.practicum.shareit.exceptions.EntityException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -51,7 +51,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingDtoOut approve(Long bookingId, Boolean isApproved, Long userId) {
         Booking booking = getById(bookingId);
         if (booking.getStatus() != Status.WAITING) {
-            throw new ValidationException("Вещь уже забронирована");
+            throw new EntityException("Вещь уже забронирована");
         }
         Item item = itemRepository.findById(booking.getItem().getId()).orElseThrow(() ->
                 new EntityNotFoundException("Вещь не найдена"));
@@ -72,49 +72,39 @@ public class BookingServiceImpl implements BookingService {
         User owner = userRepository.findById(booking.getItem().getOwner().getId()).orElseThrow(() ->
                 new EntityNotFoundException("Пользователь не найден"));
         if (!Objects.equals(booker.getId(), userId) && !Objects.equals(owner.getId(), userId)) {
-            throw new ValidationException("Только автор или владелец может просматривать данное бронирование");
+            throw new EntityException("Только автор или владелец может просматривать данное бронирование");
         }
         return BookingMapper.toBookingDtoOut(booking);
     }
 
     @Override
-    public List<BookingDtoOut> getAllByBooker(String state, Long bookerId) {
-        State bookingState;
-        try {
-            bookingState = State.valueOf(state);
-        } catch (IllegalArgumentException e) {
-            throw new ValidationException("Статус не поддерживается");
-        }
-        List<Booking> bookings = switch (bookingState) {
+    public List<BookingDtoOut> getAllByBooker(State state, Long bookerId) {
+
+        List<Booking> bookings = switch (state) {
             case ALL -> bookingRepository.findAllByBookerId(bookerId);
             case CURRENT -> bookingRepository.findAllByBookerIdAndStateCurrent(bookerId);
             case PAST -> bookingRepository.findAllByBookerIdAndStatePast(bookerId);
             case FUTURE -> bookingRepository.findAllByBookerIdAndStateFuture(bookerId);
             case WAITING -> bookingRepository.findAllByBookerIdAndStatus(bookerId, Status.WAITING);
             case REJECTED -> bookingRepository.findAllByBookerIdAndStatus(bookerId, Status.REJECTED);
-            default -> throw new ValidationException("Статус не поддерживается");
+            default -> throw new EntityException("Статус не поддерживается");
         };
         return bookings.stream().map(BookingMapper::toBookingDtoOut).collect(toList());
     }
 
     @Override
-    public List<BookingDtoOut> getAllByOwner(String state, Long ownerId) {
+    public List<BookingDtoOut> getAllByOwner(State state, Long ownerId) {
         userRepository.findById(ownerId).orElseThrow(() ->
                 new EntityNotFoundException("Пользователь не найден"));
-        State bookingState;
-        try {
-            bookingState = State.valueOf(state);
-        } catch (IllegalArgumentException e) {
-            throw new ValidationException("Статус не поддерживается");
-        }
-        List<Booking> bookings = switch (bookingState) {
+
+        List<Booking> bookings = switch (state) {
             case ALL -> bookingRepository.findAllByOwnerId(ownerId);
             case CURRENT -> bookingRepository.findAllByOwnerIdAndStateCurrent(ownerId);
             case PAST -> bookingRepository.findAllByOwnerIdAndStatePast(ownerId);
             case FUTURE -> bookingRepository.findAllByOwnerIdAndStateFuture(ownerId);
             case WAITING -> bookingRepository.findAllByOwnerIdAndStatus(ownerId, Status.WAITING);
             case REJECTED -> bookingRepository.findAllByOwnerIdAndStatus(ownerId, Status.REJECTED);
-            default -> throw new ValidationException("Статус не поддерживается");
+            default -> throw new EntityException("Статус не поддерживается");
         };
         return bookings.stream().map(BookingMapper::toBookingDtoOut).collect(toList());
     }

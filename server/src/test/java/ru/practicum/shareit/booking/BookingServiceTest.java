@@ -10,11 +10,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.ValidationException;
+import ru.practicum.shareit.exceptions.EntityException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.ItemMapper;
@@ -120,7 +121,7 @@ class BookingServiceTest {
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
         booking.setStatus(Status.APPROVED);
 
-        Assertions.assertThrows(ValidationException.class, () ->
+        Assertions.assertThrows(EntityException.class, () ->
                 bookingService.approve(1L, true, 1L));
     }
 
@@ -139,7 +140,7 @@ class BookingServiceTest {
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        Assertions.assertThrows(ValidationException.class, () ->
+        Assertions.assertThrows(EntityException.class, () ->
                 bookingService.getBookingById(1L, 3L));
     }
 
@@ -147,7 +148,7 @@ class BookingServiceTest {
     void getAllByBooker_whenStateAll_thenReturnAllBookings() {
         when(bookingRepository.findAllByBookerId(anyLong())).thenReturn(List.of(booking));
 
-        List<BookingDtoOut> actualBookings = bookingService.getAllByBooker("ALL", 2L);
+        List<BookingDtoOut> actualBookings = bookingService.getAllByBooker(State.ALL, 2L);
 
         Assertions.assertEquals(List.of(BookingMapper.toBookingDtoOut(booking)), actualBookings);
     }
@@ -156,7 +157,7 @@ class BookingServiceTest {
     void getAllByBooker_whenStateCurrent_thenReturnListOfBookings() {
         when(bookingRepository.findAllByBookerIdAndStateCurrent(anyLong())).thenReturn(List.of(booking));
 
-        List<BookingDtoOut> actualBookings = bookingService.getAllByBooker("CURRENT", 2L);
+        List<BookingDtoOut> actualBookings = bookingService.getAllByBooker(State.CURRENT, 2L);
 
         Assertions.assertEquals(List.of(BookingMapper.toBookingDtoOut(booking)), actualBookings);
     }
@@ -165,7 +166,7 @@ class BookingServiceTest {
     void getAllByBooker_whenStatePast_thenReturnListOfBookings() {
         when(bookingRepository.findAllByBookerIdAndStatePast(anyLong())).thenReturn(List.of(booking));
 
-        List<BookingDtoOut> actualBookings = bookingService.getAllByBooker("PAST", 2L);
+        List<BookingDtoOut> actualBookings = bookingService.getAllByBooker(State.PAST, 2L);
 
         Assertions.assertEquals(List.of(BookingMapper.toBookingDtoOut(booking)), actualBookings);
     }
@@ -175,7 +176,7 @@ class BookingServiceTest {
         //    when(userRepository.findById(2L)).thenReturn(Optional.of(booker));
         when(bookingRepository.findAllByBookerIdAndStateFuture(anyLong())).thenReturn(List.of(booking));
 
-        List<BookingDtoOut> actualBookings = bookingService.getAllByBooker("FUTURE", 2L);
+        List<BookingDtoOut> actualBookings = bookingService.getAllByBooker(State.FUTURE, 2L);
 
         Assertions.assertEquals(List.of(BookingMapper.toBookingDtoOut(booking)), actualBookings);
     }
@@ -185,15 +186,9 @@ class BookingServiceTest {
         // when(userRepository.findById(2L)).thenReturn(Optional.of(booker));
         when(bookingRepository.findAllByBookerIdAndStatus(anyLong(), any())).thenReturn(List.of(booking));
 
-        List<BookingDtoOut> actualBookings = bookingService.getAllByBooker("WAITING", 2L);
+        List<BookingDtoOut> actualBookings = bookingService.getAllByBooker(State.WAITING, 2L);
 
         Assertions.assertEquals(List.of(BookingMapper.toBookingDtoOut(booking)), actualBookings);
-    }
-
-    @Test
-    void getAllByBooker_whenStateUnsupported_thenExceptionThrown() {
-        Assertions.assertThrows(ValidationException.class, () ->
-                bookingService.getAllByBooker("a", 2L));
     }
 
     @Test
@@ -201,7 +196,7 @@ class BookingServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookingRepository.findAllByOwnerId(anyLong())).thenReturn(List.of(booking));
 
-        List<BookingDtoOut> actualBookings = bookingService.getAllByOwner("ALL", 1L);
+        List<BookingDtoOut> actualBookings = bookingService.getAllByOwner(State.ALL, 1L);
 
         Assertions.assertEquals(List.of(BookingMapper.toBookingDtoOut(booking)), actualBookings);
 
@@ -212,7 +207,7 @@ class BookingServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookingRepository.findAllByOwnerIdAndStateCurrent(anyLong())).thenReturn(List.of(booking));
 
-        List<BookingDtoOut> actualBookings = bookingService.getAllByOwner("CURRENT", 1L);
+        List<BookingDtoOut> actualBookings = bookingService.getAllByOwner(State.CURRENT, 1L);
 
         Assertions.assertEquals(List.of(BookingMapper.toBookingDtoOut(booking)), actualBookings);
     }
@@ -222,7 +217,7 @@ class BookingServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookingRepository.findAllByOwnerIdAndStatePast(anyLong())).thenReturn(List.of(booking));
 
-        List<BookingDtoOut> actualBookings = bookingService.getAllByOwner("PAST", 1L);
+        List<BookingDtoOut> actualBookings = bookingService.getAllByOwner(State.PAST, 1L);
 
         Assertions.assertEquals(List.of(BookingMapper.toBookingDtoOut(booking)), actualBookings);
     }
@@ -232,7 +227,7 @@ class BookingServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookingRepository.findAllByOwnerIdAndStateFuture(anyLong())).thenReturn(List.of(booking));
 
-        List<BookingDtoOut> actualBookings = bookingService.getAllByOwner("FUTURE", 1L);
+        List<BookingDtoOut> actualBookings = bookingService.getAllByOwner(State.FUTURE, 1L);
 
         Assertions.assertEquals(List.of(BookingMapper.toBookingDtoOut(booking)), actualBookings);
     }
@@ -242,7 +237,7 @@ class BookingServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(bookingRepository.findAllByOwnerIdAndStatus(anyLong(), any())).thenReturn(List.of(booking));
 
-        List<BookingDtoOut> actualBookings = bookingService.getAllByOwner("WAITING", 1L);
+        List<BookingDtoOut> actualBookings = bookingService.getAllByOwner(State.WAITING, 1L);
 
         Assertions.assertEquals(List.of(BookingMapper.toBookingDtoOut(booking)), actualBookings);
     }

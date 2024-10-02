@@ -93,7 +93,7 @@ class BookingControllerTest {
 
     @Test
     void getAllByBooker() throws Exception {
-        when(bookingService.getAllByBooker(anyString(), anyLong()))
+        when(bookingService.getAllByBooker(any(), anyLong()))
                 .thenReturn(List.of(bookingDtoOut));
 
         mvc.perform(get("/bookings?state=ALL")
@@ -108,7 +108,7 @@ class BookingControllerTest {
 
     @Test
     void getAllByOwner() throws Exception {
-        when(bookingService.getAllByOwner(anyString(), anyLong()))
+        when(bookingService.getAllByOwner(any(), anyLong()))
                 .thenReturn(List.of(bookingDtoOut));
 
         mvc.perform(get("/bookings/owner?state=ALL")

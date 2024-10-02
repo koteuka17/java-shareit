@@ -27,7 +27,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ExceptionResponse conflictHandle(final ValidationException e) {
+    public ExceptionResponse conflictHandle(final EntityException e) {
         log.error("error 409: {}: {}.", e.getClass().getSimpleName(), e.getMessage());
         return new ExceptionResponse("Конфликт создания", e.getMessage());
     }

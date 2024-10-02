@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item;
 
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
@@ -18,28 +17,28 @@ public class ItemController {
 
     //создание вещи
     @PostMapping
-    public ItemDtoOut createItemDto(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
+    public ItemDtoOut createItemDto(@RequestHeader("X-Sharer-User-Id") Long userId,
                                     @RequestBody ItemDto itemDto) {
         return itemService.createItemDto(userId, itemDto);
     }
 
     //изменение вещи
     @PatchMapping("/{id}")
-    public ItemDtoOut updateItemDto(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
+    public ItemDtoOut updateItemDto(@RequestHeader("X-Sharer-User-Id") Long userId,
                                     @RequestBody ItemDto itemDto,
-                                    @PathVariable("id") @Min(1) Long id) {
+                                    @PathVariable("id") Long id) {
         return itemService.updateItemDto(userId, itemDto, id);
     }
 
     //получение всех вещей пользователя
     @GetMapping
-    public List<ItemDtoOut> getAllItemsDto(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId) {
+    public List<ItemDtoOut> getAllItemsDto(@RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemService.getItemsDto(userId);
     }
 
     //получение вещи по id
     @GetMapping("/{id}")
-    public ItemDtoOut findItemDto(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
+    public ItemDtoOut findItemDto(@RequestHeader("X-Sharer-User-Id") Long userId,
                                   @PathVariable Long id) {
         return itemService.getItemDto(id, userId);
     }
@@ -55,7 +54,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public CommentDto createCommentDto(@RequestBody CommentDto commentDto,
                                        @PathVariable Long itemId,
-                                       @RequestHeader("X-Sharer-User-Id") @Min(1) Long userId) {
+                                       @RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemService.createCommentDto(userId, itemId, commentDto);
     }
 }

@@ -5,7 +5,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.ValidationException;
+import ru.practicum.shareit.exceptions.EntityException;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
         User user = UserMapper.toUser(userDto);
         if (repository.findAll().contains(user)) {
             log.warn("Такой пользователь уже существует");
-            throw new ValidationException("Такой пользователь уже существует");
+            throw new EntityException("Такой пользователь уже существует");
         }
         return UserMapper.toUserDto(repository.save(user));
     }

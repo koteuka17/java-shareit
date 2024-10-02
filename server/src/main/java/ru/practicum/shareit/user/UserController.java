@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user;
 
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -34,7 +33,7 @@ public class UserController {
     //обновление пользователя
     @PatchMapping("/{id}")
     public UserDto updateUserDto(@RequestBody UserDto userDto,
-                                 @PathVariable("id") @Min(1) Long id) {
+                                 @PathVariable("id") Long id) {
         return userService.updUserDto(id, userDto);
     }
 
